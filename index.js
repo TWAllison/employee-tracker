@@ -126,7 +126,7 @@ const addEmployee = () => {
         function (err, res) {
           if (err) throw err;
           console.log(`Employee record for  ${answer.lastName} ${answer.firstName} has been added!`);
-          dbSearch();
+          searchDb();
         }
       );
     });
