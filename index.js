@@ -94,3 +94,40 @@ function viewRoles() {
 }
 
 // add more functionality ? add emloyee, roles etc maybe update ? delete function?
+const addEmployee = () => {
+  inquirer.prompt([
+
+      {
+        name: 'lastName',
+        type: 'input',
+        message: "What is the employee's last name?",
+      },
+      {
+        name: 'firstName',
+        type: 'input',
+        message: "What is the employee's first name?",
+      },
+
+      {
+        name: 'roleId',
+        type: 'input',
+        message: "What is the employee's job id?",
+      },
+      {
+        name: 'managerId',
+        type: 'input',
+        message: 'What is the manager Id?',
+      },
+    ])
+    .then(answer => {
+      connection.query(
+        'INSERT INTO employee ( last_name, first_name, role_id, manager_id) VALUES (?, ?, ?, ?)',
+        [answer.lastName, answer.firstName, answer.roleId, answer.managerId],
+        function (err, res) {
+          if (err) throw err;
+          console.log(`Employee record for  ${answer.lastName} ${answer.firstName} has been added!`);
+          dbSearch();
+        }
+      );
+    });
+};
