@@ -88,44 +88,127 @@ function viewRoles() {
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
-    //prompt user to make a selection again
+
     searchDb();
   });
 }
 
 // add more functionality ? add emloyee, roles etc maybe update ? delete function?
 const addEmployee = () => {
-  inquirer.prompt([
-
+  inquirer
+    .prompt([
       {
-        name: 'lastName',
-        type: 'input',
+        name: "lastName",
+        type: "input",
         message: "What is the employee's last name?",
       },
       {
-        name: 'firstName',
-        type: 'input',
+        name: "firstName",
+        type: "input",
         message: "What is the employee's first name?",
       },
 
       {
-        name: 'roleId',
-        type: 'input',
+        name: "roleId",
+        type: "input",
         message: "What is the employee's job id?",
       },
       {
-        name: 'managerId',
-        type: 'input',
-        message: 'What is the manager Id?',
+        name: "managerId",
+        type: "input",
+        message: "What is the manager Id?",
       },
     ])
-    .then(answer => {
+    .then((answer) => {
       connection.query(
-        'INSERT INTO employee ( last_name, first_name, role_id, manager_id) VALUES (?, ?, ?, ?)',
+        "INSERT INTO employee ( last_name, first_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
         [answer.lastName, answer.firstName, answer.roleId, answer.managerId],
         function (err, res) {
           if (err) throw err;
-          console.log(`Employee record for  ${answer.lastName} ${answer.firstName} has been added!`);
+          console.log(
+            `Employee record for  ${answer.lastName} ${answer.firstName} has been added!`
+          );
+          searchDb();
+        }
+      );
+    });
+};
+
+const updateEmployee = () => {
+  inquirer
+    .prompt([
+      {
+        name: "id",
+        type: "input",
+        message: "Enter an employee id",
+      },
+      {
+        name: "roleId",
+        type: "input",
+        message: "Enter a new role id",
+      },
+    ])
+    .then((answer) => {
+      connection.query(
+        "UPDATE employee SET role_id=? WHERE id=?",
+        [answer.roleId, answer.id],
+        function (err, res) {
+          if (err) throw err;
+          console.log(`Employee information has been updated!`);
+          searchDb();
+        }
+      );
+    });
+};
+
+const addRole = () => {
+  inquirer
+    .prompt([
+      {
+        name: "roleTitle",
+        type: "input",
+        message: "What is the role title?",
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "What is the salary for this role?",
+      },
+      {
+        name: "deptId",
+        type: "input",
+        message: "What is the department ID number?",
+      },
+    ])
+    .then((answer) => {
+      connection.query(
+        "INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)",
+        [answer.roleTitle, answer.salary, answer.deptId],
+        function (err, res) {
+          if (err) throw err;
+          console.log("Role added!");
+          searchDb();
+        }
+      );
+    });
+};
+
+const addDepartment = () => {
+  inquirer
+    .prompt([
+      {
+        name: "department",
+        type: "input",
+        message: "What is the department name?",
+      },
+    ])
+    .then((answer) => {
+      connection.query(
+        "INSERT INTO department (deptartment_name) VALUES (?)",
+        [answer.department],
+        function (err, res) {
+          if (err) throw err;
+          console.log("Department added!");
           searchDb();
         }
       );
