@@ -1,21 +1,26 @@
 // add required packages
+const express = require("express");
 const mysql = require("mysql2");
 const cTable = require("console.table");
 const inquirer = require("inquirer");
+const connection = require("./db/connection");
 
-// create server connection port 3306
-const connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "RelentLess1!",
-  database: "employee_tracker",
-});
-//add err handling if err if not call search function
+
+const PORT = process.env.PORT || 3001;
+const app = express();
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
 connection.connect((err) => {
   if (err) throw err;
-  searchDb();
+  console.log("connection established");
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    searchDb();
+  });
 });
+
 //create db search function
 function searchDb() {
   inquirer
@@ -59,7 +64,7 @@ function searchDb() {
 
 function viewAllEmployees() {
   const query =
-    "SELECT employee.id, employee.first_name, employee.last_name, employee.role_id AS title, employee.manager_id, roles.title, roles.salary, department.deptartment_name AS dept FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id";
+    "SELECT employee.id, employee.first_name, employee.last_name, employee.role_id AS title, employee.manager_id, roles.title, roles.salary, department.name AS deptartment FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id";
 
   connection.query(query, function (err, res) {
     if (err) throw err;
@@ -84,7 +89,7 @@ function viewAllDepartments() {
 
 function viewRoles() {
   const query =
-    "SELECT roles.id, roles.title, roles.salary, roles.department_id, department.id, department.deptartment_name FROM roles LEFT JOIN department on roles.department_id = department.id";
+    "SELECT roles.id, roles.title, roles.salary, roles.department_id, department.id, department.name FROM roles LEFT JOIN department on roles.department_id = department.id";
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
@@ -204,7 +209,7 @@ const addDepartment = () => {
     ])
     .then((answer) => {
       connection.query(
-        "INSERT INTO department (deptartment_name) VALUES (?)",
+        "INSERT INTO department (name) VALUES (?)",
         [answer.department],
         function (err, res) {
           if (err) throw err;
